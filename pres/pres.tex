@@ -1,0 +1,199 @@
+\input{/home/vysotskiial/study/tex_include/LectSlidesHeader}
+\setbeamertemplate{caption}[numbered]
+\title[]{Наблюдатели для систем с неопределенностью при наличии неидеальностей в релейных элементах.}
+\subtitle{}
+
+\author[Высоцкий А.О., Фомичев В.В.]
+{Высоцкий Алексей Олегович \\
+Фомичев Василий Владимирович}
+
+\institute[]
+{
+МГУ имени М.В. Ломоносова\\
+Факультет вычислительной математики и кибернетики\\
+Кафедра нелинейных динамических систем и процессов управления
+}
+
+\newtheorem{statement}{Утверждение}
+
+\begin{document}
+
+\begin{frame}[t]
+	\maketitle
+\end{frame}
+
+\begin{frame}
+	\frametitle{Постановка задачи}
+
+	Пусть задана система
+	\begin{equation}\label{base_sys}
+		\begin{cases}
+			\dot{x} = Ax + Bu + B'\xi\\
+			y = Cx,
+		\end{cases}
+	\end{equation}
+	где $x \in \mathbb{R}^n$ -- неизвестный фазовый вектор, $u \in \mathbb{R}$ --
+	известный вход (управление), $\xi \in \mathbb{R}$ -- неизвестный вход
+	(возмущение), $y \in \mathbb{R}$ -- измеряемый выход системы, стационарные
+	матрицы $A$, $B$, $B'$ и $C$ -- известные. Требуется по известной информации об
+	управлении $u(t)$, выходе $y(t)$ и параметрах системы построить асимптотическую
+	(при $t \rightarrow +\infty$) оценку фазового вектора.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Основные предположения}
+	\begin{assumption}\label{ass_gen}
+		Система \eqref{base_sys} находится в общем положении.
+	\end{assumption}
+	\begin{assumption}\label{ass_rel_or}
+		Относительный порядок системы равен $r>1$.
+	\end{assumption}
+	\begin{assumption}\label{ass_null_dyn}
+		Инвариантные нули системы устойчивы (т.е. $Re(s^*)<0$, где $s^*$ --
+		инвариантный ноль системы).
+	\end{assumption}
+	\begin{assumption}\label{ass_bound_input}
+		Неизвестный вход (помеха) кусочно-непрерывен и равномерно ограничен, причем
+		известна его мажоранта, т.е. $|\xi(t)| \leq \xi_0$.
+	\end{assumption}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Преобразованная система}
+	Можно показать, что при выполнении этих предположений исходную задачу можно
+	свести к задаче наблюдения для системы
+	\begin{equation}
+		\begin{cases}
+			\dot{\varepsilon} = \tilde{A}\varepsilon + b_0\xi\\
+			\tilde{y} = \varepsilon_1,
+		\end{cases}
+		\label{final_system}
+	\end{equation}
+	где
+	\begin{equation*}
+		\tilde{A} =
+		\begin{pmatrix}
+			-l_1     & 1      & 0      & \dots  & 0     \\
+			-l_2     & 0      & 1      & \dots  & 0     \\
+			\vdots           & \vdots & \vdots & \vdots & \vdots\\
+			-l_{r-1} & 0      & 0      & \dots  & 1     \\
+			-l_r     & 0      & 0      & \dots  & 0
+		\end{pmatrix},
+		b_0 =
+		\begin{pmatrix}
+			0\\
+			0\\
+			\vdots \\
+			0\\
+			1
+		\end{pmatrix},
+	\end{equation*}
+	коэффициенты $l_i$ таковы, что матрица $\tilde{A}$ -- гурвицева.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Вид наблюдателя}
+
+	Для восстановления же вектора состояния системы \eqref{final_system} предлагалось
+	использовать каскад систем вида
+
+	\begin{equation}
+		\begin{cases}
+			\dot{\tilde{\varepsilon}}_i = -l_i\tilde{y} + \bar{\varepsilon}_{i+1} +
+			sgn(\bar{\varepsilon}_i - \tilde{\varepsilon}_i) |\bar{\varepsilon}_i -
+			\tilde{\varepsilon}_i|^\frac{1}{2}\\
+			\dot{\bar{\varepsilon}}_{i+1} = -l_{i+1}\tilde y + \mu_i sgn(\bar{\varepsilon}_i
+			- \tilde{\varepsilon}_i),
+		\end{cases},
+		i = 1, \dots, r - 1
+		\label{obs_cascade}
+	\end{equation}
+	где $\bar{\varepsilon}_i(t)$ -- оценка сигнала $\varepsilon_i(t)$, построенная на
+	предыдущем шаге; $\bar{\varepsilon}_{i+1}(t)$ -- оценка сигнала
+	$\varepsilon_{i+1}(t)$, вырабатываемая наблюдателем \eqref{obs_cascade} на
+	текущем шаге. В качестве оценки $\bar{\varepsilon}_1$ используется выход
+	$\tilde{y}$ системы \eqref{final_system}.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Система в отклонениях}
+	При таком способе построения наблюдателя система в отклонениях для каждой из
+	систем каскада \eqref{obs_cascade} будет иметь вид
+
+	\begin{equation}
+		\begin{cases}
+			\dot{e}_i = e_{i + 1} - sgn(e_i + \delta) \sqrt{\vert e_i + \delta \vert}\\
+			\dot{e}_{i+1} = -\mu_i sgn(e_1 + \delta) + \xi_i\\
+		\end{cases},
+		\label{base_sys}
+	\end{equation}
+	где $\delta = \bar{\varepsilon}_i - \varepsilon_i$.
+
+	Было доказано, что если $|\delta| \le \Delta = const$, то траектория системы
+	\eqref{base_sys} сходится в область, размеры которой не превышают $F(\Delta)$,
+	конкретнее
+	\begin{align*}
+		&|e_2| \leq max((\frac{1}{\sqrt{\nu}-1}(C_1 \Delta + C_2 \Delta^2)(\mu
+		+ \xi_0))^{\frac{1}{2}}; \sqrt{\Delta}) = F_2(\Delta),\\
+		&|e_1| \leq F_2(\Delta) + \Delta = F_1(\Delta),
+	\end{align*}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Зона нечувствительности}
+	Пусть вместо идеальных реле в системе \eqref{base_sys} имеются реле следующего вида
+	\begin{equation}
+		sgn_{ins}(x) =
+		\begin{cases}
+			1,\; x > \Delta_{ins},\\
+			-1,\; x < -\Delta_{ins},\\
+			0,\; \vert x \vert \le \Delta_{ins}
+		\end{cases},
+		\label{insens_relay}
+	\end{equation}
+	\begin{statement}
+		В случае наличия неидеальности вида \eqref{insens_relay} в системе
+		\eqref{base_sys} траектория системы будет сходится в область, размер которой не
+		превышает $F(\Delta + \Delta_{ins})$
+	\end{statement}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Гистерезис}
+	Пусть вместо идеальных реле в системе \eqref{base_sys} имеются реле с
+	неидеальностью типа гистерезис, то есть:
+	\begin{equation}
+		sgn_h(x(t)) =
+		\begin{cases}
+			1,\; x > \Delta_h,\\
+			-1,\; x < -\Delta_h,\\
+			sgn(x(\tau(t))),\; \vert x \vert \le \Delta_h
+		\end{cases},
+		\label{hyst_relay}
+	\end{equation}
+	где $\tau(t) = \sup{\{\tau \le t: |x(\tau)| = 1\}}$.
+	\begin{statement}
+		В случае наличия неидеальности вида \eqref{hyst_relay} в системе
+		\eqref{base_sys} траектория системы будет сходится в область, размер которой не
+		превышает $F(\Delta + \Delta_{h} + \varepsilon)$, где $\varepsilon > 0$ --
+		любое, сколь угодно малое число.
+	\end{statement}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Задержка}
+	Пусть в системе \eqref{base_sys} имеется задержка в элементах переключения, т.е.
+	\begin{equation}
+		sgn_{\tau}(x(t)) = sgn(x(t-\tau))
+		\label{delay_relay}
+	\end{equation}
+	\begin{statement}
+		В случае наличия неидеальности вида \eqref{delay_relay} в системе
+		\eqref{base_sys} в установившемся режиме будет справедливо неравенство
+		\begin{equation*}
+			e_2^* \ge \frac{\tau\sqrt{\nu}(\mu - \xi)}{1 - \sqrt{\nu}},
+		\end{equation*}
+		где $e_2^*$ -- координаты пересечения траекторией системы оси $e_1 = 0$.
+	\end{statement}
+\end{frame}
+\end{document}
